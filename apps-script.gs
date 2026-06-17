@@ -6,8 +6,20 @@ const SPREADSHEET_ID = '1JqwCtagwSRMH7V9XNZ7epjxPj5FFczlMeM6cr3gX9Rs';
 
 function doPost(e) {
   try {
-    // Parse the JSON data from the form
-    const data = JSON.parse(e.postData.contents);
+    let data;
+    
+    // Handle both regular JSON and no-cors mode requests
+    if (e.postData && e.postData.contents) {
+      data = JSON.parse(e.postData.contents);
+    } else if (e.postData) {
+      // Try getDataAsString for no-cors requests
+      const rawData = e.postData.getBlob().getDataAsString();
+      data = JSON.parse(rawData);
+    } else {
+      throw new Error('No postData received');
+    }
+    
+    Logger.log('Received data: ' + JSON.stringify(data));
     
     // Get the active spreadsheet and sheet
     const spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
@@ -15,7 +27,7 @@ function doPost(e) {
     
     // If sheet doesn't exist, create it with headers
     if (!sheet) {
-      sheet = spreadsheet.insertSheet('Signups');
+      sheet = spreadsheet.insertSheet('St Mary Coptic Orthodox Church of Delaware 2026 Chess Training Signup');
       const headers = ['Timestamp', 'Name', 'Grade', 'Email', 'Phone'];
       sheet.appendRow(headers);
     }
@@ -23,13 +35,14 @@ function doPost(e) {
     // Append the new row with form data
     const newRow = [
       data.timestamp || new Date().toISOString(),
-      data.name,
-      data.grade,
-      data.email,
-      data.phone
+      data.name || '',
+      data.grade || '',
+      data.email || '',
+      data.phone || ''
     ];
     
     sheet.appendRow(newRow);
+    Logger.log('Row appended successfully');
     
     // Return success response
     return ContentService.createTextOutput(JSON.stringify({
