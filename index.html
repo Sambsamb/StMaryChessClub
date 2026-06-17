@@ -215,23 +215,18 @@
             submitBtn.disabled = true;
             submitBtn.textContent = 'Submitting...';
 
-            // Get form data
-            const formData = {
-                name: document.getElementById('name').value,
-                grade: document.getElementById('grade').value,
-                email: document.getElementById('email').value,
-                phone: document.getElementById('phone').value,
-                timestamp: new Date().toISOString()
-            };
+            // Create FormData object for proper form submission
+            const formData = new FormData();
+            formData.append('name', document.getElementById('name').value);
+            formData.append('grade', document.getElementById('grade').value);
+            formData.append('email', document.getElementById('email').value);
+            formData.append('phone', document.getElementById('phone').value);
+            formData.append('timestamp', new Date().toISOString());
 
             // Send data to Google Apps Script
             fetch(GOOGLE_APPS_SCRIPT_URL, {
                 method: 'POST',
-                mode: 'no-cors',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData)
+                body: formData
             })
             .then(() => {
                 // Show success message

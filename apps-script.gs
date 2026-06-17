@@ -6,20 +6,16 @@ const SPREADSHEET_ID = '1E4EfvNni-Qkpg149f5tCqFFK6-P8gnIcxgbfxiRuh2I';
 
 function doPost(e) {
   try {
-    let data;
+    Logger.log('Request received. Parameters: ' + JSON.stringify(e.parameter));
     
-    // Handle both regular JSON and no-cors mode requests
-    if (e.postData && e.postData.contents) {
-      data = JSON.parse(e.postData.contents);
-    } else if (e.postData) {
-      // Try getDataAsString for no-cors requests
-      const rawData = e.postData.getBlob().getDataAsString();
-      data = JSON.parse(rawData);
-    } else {
-      throw new Error('No postData received');
-    }
+    // Get form parameters (from FormData)
+    const name = e.parameter.name || '';
+    const grade = e.parameter.grade || '';
+    const email = e.parameter.email || '';
+    const phone = e.parameter.phone || '';
+    const timestamp = e.parameter.timestamp || new Date().toISOString();
     
-    Logger.log('Received data: ' + JSON.stringify(data));
+    Logger.log('Received data - Name: ' + name + ', Grade: ' + grade + ', Email: ' + email);
     
     // Get the active spreadsheet and sheet
     const spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
@@ -30,33 +26,21 @@ function doPost(e) {
       sheet = spreadsheet.insertSheet('St Mary Coptic Orthodox Church of Delaware 2026 Chess Training Signup');
       const headers = ['Timestamp', 'Name', 'Grade', 'Email', 'Phone'];
       sheet.appendRow(headers);
+      Logger.log('Created new sheet with headers');
     }
     
     // Append the new row with form data
-    const newRow = [
-      data.timestamp || new Date().toISOString(),
-      data.name || '',
-      data.grade || '',
-      data.email || '',
-      data.phone || ''
-    ];
-    
+    const newRow = [timestamp, name, grade, email, phone];
     sheet.appendRow(newRow);
     Logger.log('Row appended successfully');
     
     // Return success response
-    return ContentService.createTextOutput(JSON.stringify({
-      status: 'success',
-      message: 'Data received and stored'
-    })).setMimeType(ContentService.MimeType.JSON);
+    return ContentService.createTextOutput('Success');
     
   } catch (error) {
     // Log error and return error response
     Logger.log('Error: ' + error.toString());
-    return ContentService.createTextOutput(JSON.stringify({
-      status: 'error',
-      message: error.toString()
-    })).setMimeType(ContentService.MimeType.JSON);
+    return ContentService.createTextOutput('Error: ' + error.toString());
   }
 }
 
