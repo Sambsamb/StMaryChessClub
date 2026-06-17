@@ -2,7 +2,7 @@
 // This script receives form data and stores it in a Google Sheet
 
 // IMPORTANT: Update this with your actual spreadsheet ID
-const SPREADSHEET_ID = 'YOUR_SPREADSHEET_ID';
+const SPREADSHEET_ID = '1JqwCtagwSRMH7V9XNZ7epjxPj5FFczlMeM6cr3gX9Rs';
 
 function doPost(e) {
   try {
@@ -11,7 +11,7 @@ function doPost(e) {
     
     // Get the active spreadsheet and sheet
     const spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
-    let sheet = spreadsheet.getSheetByName('Signups');
+    let sheet = spreadsheet.getSheetByName('St Mary Coptic Orthodox Church of Delaware 2026 Chess Training Signup');
     
     // If sheet doesn't exist, create it with headers
     if (!sheet) {
