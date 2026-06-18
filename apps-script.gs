@@ -6,8 +6,13 @@ const SPREADSHEET_ID = '1E4EfvNni-Qkpg149f5tCqFFK6-P8gnIcxgbfxiRuh2I';
 
 function doPost(e) {
   try {
+    if (!e || !e.parameter) {
+      Logger.log('Error: Request object or parameter is missing');
+      return ContentService.createTextOutput('Error: No data received');
+    }
+
     Logger.log('Request received. Parameters: ' + JSON.stringify(e.parameter));
-    
+
     // Get form parameters (from FormData)
     const name = e.parameter.name || '';
     const grade = e.parameter.grade || '';
@@ -46,23 +51,20 @@ function doPost(e) {
 
 // Helper function to test the script (optional)
 function testScript() {
-  const testData = {
-    timestamp: new Date().toISOString(),
-    name: 'John Smith',
+  const payload = {
+    name: 'Test Student',
     grade: '5',
-    email: 'john@example.com',
-    phone: '(555) 123-4567'
+    email: 'test@example.com',
+    phone: '(555) 123-4567',
+    timestamp: new Date().toISOString()
   };
-  
-  const payload = JSON.stringify(testData);
+
   const options = {
     method: 'post',
     payload: payload,
-    headers: {
-      'Content-Type': 'application/json'
-    }
+    muteHttpExceptions: true
   };
-  
+
   const response = UrlFetchApp.fetch(ScriptApp.getService().getUrl(), options);
-  Logger.log(response.getContentText());
+  Logger.log('Test response: ' + response.getContentText());
 }
